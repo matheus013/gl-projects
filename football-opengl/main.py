@@ -4,7 +4,11 @@ import numpy
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLUT import *
+from OpenGL.GLU import *
 from pygame.locals import *
+
+center_x = 1.0
+center_y = 1.0
 
 CIRCLE_ANGLE_INC = 0.5
 
@@ -40,17 +44,17 @@ bres = False
 
 
 def draw_bresenham(x1, y1, x2, y2):
-    x1 *= 1000
-    x2 *= 1000
-    y1 *= 1000
-    y2 *= 1000
+    x1 *= 10
+    x2 *= 10
+    y1 *= 10
+    y2 *= 10
 
     x1 = int(x1)
     x2 = int(x2)
     y1 = int(y1)
     y2 = int(y2)
 
-    # print x1, x2, y1, y2
+    print(x1, x2, y1, y2)
 
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
@@ -89,7 +93,7 @@ def draw_text(text_string):
     ref_x = (text_surface.get_width() / -600.0)
     ref_y = height * 0.7
 
-    position = (ref_x, ref_y, 0)  # define start render
+    position = (ref_x + center_x, ref_y + center_y, 0)  # define start render
 
     text_data = pygame.image.tostring(text_surface, "RGBA", True)
     glRasterPos3d(*position)
@@ -100,12 +104,12 @@ def draw_solid_circle(rad):
     glLineWidth(thickness)
     glBegin(GL_TRIANGLE_FAN)
 
-    glVertex2f(0.0, 0.0)
+    glVertex2f(center_x, center_y)
 
     angle = 0
     while True:
         rads = math.radians(angle)
-        glVertex3f(math.cos(rads) * rad, math.sin(rads) * rad, 0.0)
+        glVertex3f(math.cos(rads) * rad + center_x, math.sin(rads) * rad + center_y, 0.0)
         angle += CIRCLE_ANGLE_INC
         if angle > 360:
             break
@@ -123,7 +127,7 @@ def draw_circle(rad, side_num, edge_only):
 
     for vertex in range(0, side_num):
         angle = float(vertex) * 2.0 * numpy.pi / side_num
-        glVertex3f(numpy.cos(angle) * rad, numpy.sin(angle) * rad, 0.0)
+        glVertex3f(numpy.cos(angle) * rad + center_x, numpy.sin(angle) * rad + center_y, 0.0)
 
     glEnd()
     glLineWidth(1)
@@ -268,11 +272,11 @@ def build_crossbar(x, y):
 
 
 def generate():
-    build_border(0.0, 0.0)
-    build_goal(0.0, 0.0)
-    build_penalty(0.0, 0.0)
-    build_center_line(0.0, 0.0)
-    build_crossbar(0.0, 0.0)
+    build_border(center_x, center_y)
+    build_goal(center_x, center_y)
+    build_penalty(center_x, center_y)
+    build_center_line(center_x, center_y)
+    build_crossbar(center_x, center_y)
 
 
 def build(edges, points):
@@ -394,10 +398,12 @@ def draw_game():
 
 if __name__ == '__main__':
     pygame.init()
-    win = (600, 600)
+    win = (800, 600)
     pygame.display.set_mode(win, DOUBLEBUF | OPENGL)
 
     generate()
+
+    gluOrtho2D(0, 2, 2, 0)
 
     while True:
         for event in pygame.event.get():
