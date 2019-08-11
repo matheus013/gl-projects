@@ -24,11 +24,14 @@ def draw_game():
     build_door(door_conf['front'][2], ('front', 2))
     build_door(door_conf['front'][3], ('front', 3))
     build_door(door_conf['front'][4], ('front', 4))
+    build_door(door_conf['right'][0], ('right', 0))
+    build_door(door_conf['right'][1], ('right', 1))
+    build_door(door_conf['right'][2], ('right', 2))
+    build_door(door_conf['left'][0], ('left', 0))
 
 
 def generate(x, y, z):
     build_front(x, y, z)  # OK surface
-    # print(door_conf['front'][0].print())
     build_right(x, y, z)  # OK surface
 
     center_ground = (center_point[0], center_point[1], center_point[2])
@@ -88,29 +91,22 @@ if __name__ == '__main__':
                 if event.button == 4:
                     glTranslatef(0, 0, 1.0)
                     za += 1
-                    # print(xa, ya, za)
                 if event.button == 5:
                     glTranslatef(0, 0, -1.0)
                     za -= 1
-                    # print(xa, ya, za)
             if event.type == pygame.KEYDOWN:
-                print(event.key, pygame.K_3)
                 if event.key == pygame.K_LEFT:
                     glTranslatef(-1, 0, 0)
                     xa -= 1
-                    # print(xa, ya, za)
                 if event.key == pygame.K_RIGHT:
                     glTranslatef(1, 0, 0)
                     xa += 1
-                    # print(xa, ya, za)
                 if event.key == pygame.K_UP:
                     glTranslatef(0, 1, 0)
                     ya += 1
-                    # print(xa, ya, za)
                 if event.key == pygame.K_DOWN:
                     glTranslatef(0, -1, 0)
                     ya -= 1
-                    # print(xa, ya, za)
 
                 if event.key == pygame.K_1:
                     k = ('front', 0)
@@ -127,11 +123,38 @@ if __name__ == '__main__':
                 if event.key == pygame.K_5:
                     k = ('front', 4)
                     door_conf[k[0]][k[1]].run_reverse()
+                if event.key == pygame.K_6:
+                    k = ('right', 0)
+                    door_conf[k[0]][k[1]].run_reverse()
+                if event.key == pygame.K_7:
+                    k = ('right', 1)
+                    door_conf[k[0]][k[1]].run_reverse()
+                if event.key == pygame.K_8:
+                    k = ('right', 2)
+                    door_conf[k[0]][k[1]].run_reverse()
+                if event.key == pygame.K_9:
+                    k = ('left', 0)
+                    door_conf[k[0]][k[1]].run_reverse()
 
-                if event.key == pygame.K_COMMA:
+                # rotate over X
+                if event.key == pygame.K_w:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
+                    glRotatef(5, 1, 0, 0)
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+                if event.key == pygame.K_s:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
+                    glRotatef(-5, 1, 0, 0)
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+                # rotate over Y
+                if event.key == pygame.K_a:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
                     glRotatef(5, 0, 1, 0)
-                if event.key == pygame.K_PERIOD:
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+                if event.key == pygame.K_d:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
                     glRotatef(-5, 0, 1, 0)
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+
                 if event.key == pygame.K_TAB:
                     DataUtil.face_view = not DataUtil.face_view
 
