@@ -1,3 +1,5 @@
+import copy
+
 from cgfinal.constants import *
 from cgfinal.support import *
 import math
@@ -331,7 +333,38 @@ def build_door(config, key):
 
 
 def build_block(center, l, h, d):
+    # base plain
+    c = list(center)
+    c[1] = c[1] - h / 2
+    base = build_block_plain(c, l, d)
+    # top plain
+    c = list(center)
+    c[1] = c[1] + h / 2
+    build_block_plain(c, l, d)
+
+    build_wall(base[0], base[1], h)
+    build_wall(base[1], base[2], h)
+    build_wall(base[2], base[3], h)
+    build_wall(base[0], base[3], h)
+
     pass
+
+
+def build_block_plain(center, l, d):
+    vertices = (
+        (center[0] - l / 2, center[1], center[2] - d / 2),
+        (center[0] - l / 2, center[1], center[2] + d / 2),
+        (center[0] + l / 2, center[1], center[2] + d / 2),
+        (center[0] + l / 2, center[1], center[2] - d / 2),
+    )
+
+    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
+    DataUtil.surfaces += make_surface(vertices, len(DataUtil.vertices))
+    DataUtil.vertices += vertices
+
+    valid_points(DataUtil.vertices, 3, 'plain')
+    valid_edges(DataUtil.edges, DataUtil.vertices, 'plain')
+    return vertices
 
 
 def build_bench(center, l, h, d):
@@ -368,3 +401,104 @@ def build_arcs(ref_x, ref_y, ref_z):
 
     for i in points_arc:
         build_half_circle_yz(i[0], i[1], i[2], i[3])
+
+
+def build_internal(x, y, z):
+    build_pillar(x + tower_width, y, z + depth * (2 / 15), height, width / 20)
+    build_pillar(x + tower_width, y, z + depth * (4 / 15), height, width / 20)
+    build_pillar(x + tower_width, y, z + depth * (6 / 15), height, width / 20)
+
+    build_pillar(x + width - tower_width, y, z + depth * (2 / 15), height, width / 20)
+    build_pillar(x + width - tower_width, y, z + depth * (4 / 15), height, width / 20)
+    build_pillar(x + width - tower_width, y, z + depth * (6 / 15), height, width / 20)
+
+    build_wall((x, y, z + depth * 0.4 + attachment_depth), (x + tower_width, y, z + depth * 0.4 + attachment_depth),
+               height)
+    pillar_width_altar = width / 12
+    # front pillar
+    build_pillar(x + tower_width, y, z + depth * 0.4 + attachment_depth, height, pillar_width_altar)
+    build_pillar(x + width - tower_width, y, z + depth * 0.4 + attachment_depth, height, pillar_width_altar)
+
+    build_wall((x + width - tower_width, y, z + depth * 0.4 + attachment_depth),
+               (x + width, y, z + depth * 0.4 + attachment_depth),
+               height)
+
+    build_wall((x + tower_width * 1.5, y, z + depth * 0.4 + attachment_depth),
+               (x + tower_width, y, z + depth * 0.4 + attachment_depth),
+               height)
+
+    build_wall((x + width - tower_width * 1.5, y, z + depth * 0.4 + attachment_depth),
+               (x + width, y, z + depth * 0.4 + attachment_depth),
+               height)
+    # internal wall under tower
+    # ->right
+    build_wall((x + width - tower_width, y, z),
+               (x + width - tower_width, y, z + depth * (2 / 15)), height)
+    # ->left
+    build_wall((x + tower_width * 0.7, y, z),
+               (x + tower_width * 0.7, y, z + depth * (2 / 15)), height)
+    build_wall((x + tower_width * 0.7, y, z + depth * (2 / 15)),
+               (x + tower_width, y, z + depth * (2 / 15)), height)
+    build_wall((x + tower_width, y, z + depth * (2 / 15)),
+               (x + tower_width, y, z + depth * (4 / 45)), height)
+    build_wall((x + tower_width, y, z + depth * (4 / 45)),
+               (x + tower_width - tower_width * 0.25, y, z + depth * (4 / 45)), height)
+    build_wall((x + tower_width - tower_width * 0.25, y, z + depth * (4 / 45)),
+               (x + tower_width - tower_width * 0.25, y, z + depth * (2 / 45)), height)
+    build_wall((x + tower_width - tower_width * 0.25, y, z + depth * (2 / 45)),
+               (x + tower_width, y, z + depth * (2 / 45)), height)
+    build_wall((x + tower_width, y, z + depth * (2 / 45)),
+               (x + tower_width, y, z), height)
+    # altar
+    # altar side wall(left)
+    x_ref = x + tower_width
+    d_height_ref = height * 0.6
+    build_wall((x_ref, y, z + depth * 0.4 + attachment_depth),
+               (x_ref, y, z + depth * 0.4 + attachment_depth * 1.2), height)
+
+    build_wall((x_ref, y + d_height_ref, z + depth * 0.4 + attachment_depth * 1.2),
+               (x_ref, y + d_height_ref, z + depth * 0.4 + attachment_depth * 1.2 + door_width[1]),
+               height - d_height_ref)
+    build_wall((x_ref, y, z + depth * 0.4 + attachment_depth * 1.2 + door_width[1]),
+               (x_ref, y, z + depth * 0.95), height)
+    # altar side wall(right)
+    x_ref = x + width - tower_width
+    build_wall((x_ref, y, z + depth * 0.4 + attachment_depth),
+               (x_ref, y, z + depth * 0.4 + attachment_depth * 1.2), height)
+
+    build_wall((x_ref, y + d_height_ref, z + depth * 0.4 + attachment_depth * 1.2),
+               (x_ref, y + d_height_ref, z + depth * 0.4 + attachment_depth * 1.2 + door_width[1]),
+               height - d_height_ref)
+    build_wall((x_ref, y, z + depth * 0.4 + attachment_depth * 1.2 + door_width[1]),
+               (x_ref, y, z + depth * 0.95), height)
+    # base block
+    block_height = height / 10
+    center_block_master = (x + width / 2, y + block_height / 2,
+                           z + (depth * 0.4 + attachment_depth + depth) / 2)
+    center_block_front = (x + tower_width + pillar_width_altar, y + block_height / 2,
+                          z + depth * 0.4 + attachment_depth + pillar_width_altar / 4)
+    center_block_sides = (x + tower_width + pillar_width_altar / 4, y + block_height / 2,
+                          (z + depth * 0.4 + attachment_depth * 1.2 + door_width[1] + z + depth * 0.95) / 2)
+
+    build_block(center_block_front, pillar_width_altar * 2, block_height, pillar_width_altar / 2)
+    center_block_front = (x + width - tower_width - pillar_width_altar, y + block_height / 2,
+                          z + depth * 0.4 + attachment_depth + pillar_width_altar / 4)
+    build_block(center_block_front, pillar_width_altar * 2, block_height, pillar_width_altar / 2)
+
+    altar_depth = depth - depth * 0.4 - attachment_depth - pillar_width_altar
+    altar_width = width - 2 * tower_width - pillar_width_altar
+    build_block(center_block_master, altar_width, block_height, altar_depth)
+    block_side_depth = z + depth * 0.95 - (z + depth * 0.4 + attachment_depth * 1.2 + door_width[1])
+    build_block(center_block_sides, pillar_width_altar / 2, block_height, block_side_depth)
+    center_block_sides = (x + width - tower_width - pillar_width_altar / 4, y + block_height / 2,
+                          (z + depth * 0.4 + attachment_depth * 1.2 + door_width[1] + z + depth * 0.95) / 2)
+    build_block(center_block_sides, pillar_width_altar / 2, block_height, block_side_depth)
+
+    center_level_2 = (center_block_master[0], center_block_master[1] + block_height / 2 + block_height / 4,
+                      center_block_master[2] + altar_depth / 4)
+    build_block(center_level_2, altar_width * 0.7, block_height / 2, altar_depth / 4)
+
+    center_level_3 = ((center_block_master[0], center_block_master[1] + block_height + block_height / 4,
+                       center_block_master[2] + altar_depth / 4))
+    build_block(center_level_3, altar_width * 0.6, (block_height / 2) * 0.8, altar_depth / 4)
+    center_level_4 = ()

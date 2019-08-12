@@ -31,42 +31,18 @@ def draw_game():
 
 
 def generate(x, y, z):
-    build_front(x, y, z)  # OK surface
-    build_right(x, y, z)  # OK surface
-
     center_ground = (center_point[0], center_point[1], center_point[2])
     origin_ground = (x, y, z)
     if ground:
         build_ground(center_ground, origin_ground, 3)  # OK surface
+
+    build_front(x, y, z)  # OK surface
+    build_right(x, y, z)  # OK surface
     build_left(x, y, z)  # OK surface
     build_back(x, y, z)  # OK surface
     build_top(x, y, z)
     build_tower(x, y, z)  # OK surface
-
-    build_pillar(x + tower_width, y, z + depth * (2 / 15), height, width / 20)
-    build_pillar(x + tower_width, y, z + depth * (4 / 15), height, width / 20)
-    build_pillar(x + tower_width, y, z + depth * (6 / 15), height, width / 20)
-
-    build_pillar(x + width - tower_width, y, z + depth * (2 / 15), height, width / 20)
-    build_pillar(x + width - tower_width, y, z + depth * (4 / 15), height, width / 20)
-    build_pillar(x + width - tower_width, y, z + depth * (6 / 15), height, width / 20)
-
-    build_wall((x, y, z + depth * 0.4 + attachment_depth), (x + tower_width, y, z + depth * 0.4 + attachment_depth),
-               height)
-    build_pillar(x + tower_width, y, z + depth * 0.4 + attachment_depth, height, width / 20)
-
-    build_wall((x + width - tower_width, y, z + depth * 0.4 + attachment_depth),
-               (x + width, y, z + depth * 0.4 + attachment_depth),
-               height)
-    build_pillar(x + width - tower_width, y, z + depth * 0.4 + attachment_depth, height, width / 20)
-
-    build_wall((x + tower_width * 1.5, y, z + depth * 0.4 + attachment_depth),
-               (x + tower_width, y, z + depth * 0.4 + attachment_depth),
-               height)
-
-    build_wall((x + width - tower_width * 1.5, y, z + depth * 0.4 + attachment_depth),
-               (x + width, y, z + depth * 0.4 + attachment_depth),
-               height)
+    build_internal(x, y, z)  # OK surface
 
 
 if __name__ == '__main__':
@@ -76,9 +52,8 @@ if __name__ == '__main__':
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
     gluPerspective(30, (display[0] / display[1]), 0.1, 50.0)
     generate(ref_x, ref_y, ref_z)
-    xa = 0
-    ya = 0
-    za = 0
+
+    xa, ya, za = 0, 0, 0
 
     glOrtho(-5, 30, 10, -30, 15, 30)
 
