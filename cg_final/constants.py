@@ -44,6 +44,8 @@ class DataUtil(object):
     surfaces = ()
     path_textures = {
         "wall": "/Users/matheus/PycharmProjects/CG-Test/cg_final/textures/wall-0.png",
+        "ground0": "/Users/matheus/PycharmProjects/CG-Test/cg_final/textures/piso-1.png",
+
     }
     colors = (
         (0.9, 0, 0),  # red
@@ -51,13 +53,7 @@ class DataUtil(object):
         (0.75, 0.38, 0),  # orange
         (0, 0, 1),  # blue
         (1, 1, 0),  # yellow
-        (1, 1, 1),
-        (1, 0, 0),
-        (0, 1, 0),
-        (0.75, 0.38, 0),
-        (0, 0, 1),
-        (1, 1, 0),
-        (0.9, 1, 1)
+
     )
     face_view = False
     door = False

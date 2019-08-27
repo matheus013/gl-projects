@@ -45,18 +45,19 @@ def make_surface(vertices, zero):
 
 def texture_init(type_texture):
     if type_texture is None:
-        type_texture = "wall"
-            # return
+        return False, None
 
     fileName = DataUtil.path_textures[type_texture]
     texture = FileTexture(fileName)
     texture_id = glGenTextures(1)
 
     if texture is None:
-        return
+        return False, texture_id
 
     glBindTexture(GL_TEXTURE_2D, texture_id)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+
+    glEnable(GL_TEXTURE_2D)
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT)
@@ -68,29 +69,34 @@ def texture_init(type_texture):
     glTexImage2D(GL_TEXTURE_2D, 0, 3, texture.width, texture.height, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, texture.raw_reference)
 
-    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, texture_id)
+
+    return True, texture_id
 
 
 def build(edges, points, surfaces, type_texture=None):
     ref_texture = ((0, 1), (0, 0), (1, 0), (1, 1))
     if DataUtil.face_view:
         glBegin(GL_QUADS)
-        texture_init(type_texture)
+
+        texture_ok, texture_id = texture_init(type_texture)
+
         for surface in surfaces:
             x = 0
             for vertex in surface:
                 x += 1
                 index_texture = x - 1
-                glColor3fv(DataUtil.colors[x])
+                if texture_ok:
+                    glTexCoord2f(ref_texture[index_texture][0], ref_texture[index_texture][1])
+                else:
+                    glColor3fv(DataUtil.colors[x])
                 glVertex3fv(points[vertex])
-                glTexCoord2f(ref_texture[index_texture][0], ref_texture[index_texture][1])
         glEnd()
         glutSwapBuffers()
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
             glVertex3fv(points[vertex])
-            # print(vertex % 4)
 
     glEnd()
     glLineWidth(1)

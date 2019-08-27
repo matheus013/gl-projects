@@ -1,6 +1,6 @@
 import array
 import random
-
+# from OpenGLContext import testingcontext
 import numpy
 from PIL import Image
 
@@ -32,3 +32,6 @@ class FileTexture(Texture):
         self.width, self.height = img.size
 
         self.raw_reference = numpy.array(list(img.getdata()), numpy.uint8)
+
+# BaseContext = testingcontext.getInteractive()
+# class TestContext( BaseContext ):

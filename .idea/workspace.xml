@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0f539bd1-5652-4eeb-b31a-2afabb14ec08" name="Default Changelist" comment="" />
+    <list default="true" id="0f539bd1-5652-4eeb-b31a-2afabb14ec08" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/cg_final/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/cg_final/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cg_final/support.py" beforeDir="false" afterPath="$PROJECT_DIR$/cg_final/support.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cg_final/textures/gl_texture.py" beforeDir="false" afterPath="$PROJECT_DIR$/cg_final/textures/gl_texture.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,8 +17,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cg_final/constants.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="900">
-              <caret line="60" column="5" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="5" />
+            <state relative-caret-position="274">
+              <caret line="55" selection-start-line="55" selection-end-line="55" />
             </state>
           </provider>
         </entry>
@@ -22,8 +26,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cg_final/builder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="246">
-              <caret line="305" column="8" selection-start-line="305" selection-start-column="8" selection-end-line="305" selection-end-column="8" />
+            <state relative-caret-position="33">
+              <caret line="307" column="18" lean-forward="true" selection-start-line="307" selection-start-column="18" selection-end-line="307" selection-end-column="18" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -31,11 +35,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cg_final/textures/gl_texture.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-164">
-              <caret line="4" column="8" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="8" />
+            <state relative-caret-position="286">
+              <caret line="36" column="35" lean-forward="true" selection-start-line="36" selection-start-column="35" selection-end-line="36" selection-end-column="35" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -52,8 +59,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cg_final/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1142">
-              <caret line="15" column="8" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
+            <state relative-caret-position="165">
+              <caret line="11" column="11" lean-forward="true" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -61,11 +68,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cg_final/support.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-69">
-              <caret line="52" column="33" lean-forward="true" selection-start-line="52" selection-start-column="33" selection-end-line="52" selection-end-column="33" />
+            <state relative-caret-position="141">
+              <caret line="47" column="26" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -114,6 +121,7 @@
       <find>buil</find>
       <find>build(</find>
       <find>tos</find>
+      <find>bind</find>
     </findStrings>
     <replaceStrings>
       <replace>right</replace>
@@ -150,10 +158,11 @@
         <option value="$PROJECT_DIR$/cgfinal/textures/test.py" />
         <option value="$PROJECT_DIR$/cgfinal/support.py" />
         <option value="$PROJECT_DIR$/cgfinal/constants.py" />
-        <option value="$PROJECT_DIR$/cg_final/constants.py" />
-        <option value="$PROJECT_DIR$/cg_final/textures/gl_texture.py" />
         <option value="$PROJECT_DIR$/cg_final/door/door.py" />
+        <option value="$PROJECT_DIR$/cg_final/constants.py" />
         <option value="$PROJECT_DIR$/cg_final/support.py" />
+        <option value="$PROJECT_DIR$/cg_final/main.py" />
+        <option value="$PROJECT_DIR$/cg_final/textures/gl_texture.py" />
       </list>
     </option>
   </component>
@@ -179,28 +188,6 @@
               <item name="CG-Test" type="462c0819:PsiDirectoryNode" />
               <item name="cg_final" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="CG-Test" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CG-Test" type="462c0819:PsiDirectoryNode" />
-              <item name="cg_final" type="462c0819:PsiDirectoryNode" />
-              <item name="textures" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CG-Test" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CG-Test" type="462c0819:PsiDirectoryNode" />
-              <item name="ponto-gratis" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CG-Test" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CG-Test" type="462c0819:PsiDirectoryNode" />
-              <item name="solar_system" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="CG-Test" type="b2602c69:ProjectViewProjectNode" />
-              <item name="CG-Test" type="462c0819:PsiDirectoryNode" />
-              <item name="solar_system" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -221,7 +208,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -411,7 +398,7 @@
       <workItem from="1565532701993" duration="28618000" />
       <workItem from="1565792997337" duration="31000" />
       <workItem from="1566851635613" duration="386000" />
-      <workItem from="1566931747693" duration="7110000" />
+      <workItem from="1566931747693" duration="10687000" />
     </task>
     <servers />
   </component>
@@ -421,7 +408,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="104512000" />
+    <option name="totallyTimeSpent" value="108089000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -435,12 +422,12 @@
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.13812602" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13812602" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49919224" weight="0.42054793" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49919224" visible="true" weight="0.42054793" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -449,7 +436,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32876712" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50080776" side_tool="true" weight="0.35479453" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49919224" visible="true" weight="0.35479453" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49919224" weight="0.35479453" />
       <window_info anchor="bottom" id="Python Console" order="12" sideWeight="0.49919224" weight="0.2780822" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -487,7 +474,7 @@
     <option name="version" value="1" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/CG_Test$final.coverage" NAME="final Coverage Results" MODIFIED="1566940032330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cg_final" />
+    <SUITE FILE_PATH="coverage/CG_Test$final.coverage" NAME="final Coverage Results" MODIFIED="1566947782537" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cg_final" />
     <SUITE FILE_PATH="coverage/CG_Test$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1564840190871" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cgfinal" />
     <SUITE FILE_PATH="coverage/CG_Test$Unittests_for_planet_test_TestPlanet_test_is_correct_position.coverage" NAME="Unittests for planet_test.TestPlanet.test_is_correct_position Coverage Results" MODIFIED="1565027330132" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/solar_system/tests" />
     <SUITE FILE_PATH="coverage/CG_Test$main.coverage" NAME="main Coverage Results" MODIFIED="1563998177750" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -565,13 +552,6 @@
     <entry file="file://$PROJECT_DIR$/cg_final/textures/wall-0.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/constants.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="900">
-          <caret line="60" column="5" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/lib/python3.7/site-packages/PIL/Image.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
@@ -586,19 +566,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/door/door.py">
+    <entry file="file://$PROJECT_DIR$/deltat.data">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" selection-start-line="18" selection-end-line="18" />
+        <state relative-caret-position="-1021" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Leap_Second.dat">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/deltat.preds">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cg_final/constants.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/main.py">
+    <entry file="file://$PROJECT_DIR$/cg_final/support.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1142">
-          <caret line="15" column="8" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="8" />
+        <state relative-caret-position="141">
+          <caret line="47" column="26" selection-start-line="47" selection-start-column="26" selection-end-line="47" selection-end-column="26" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cg_final/builder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="33">
+          <caret line="307" column="18" lean-forward="true" selection-start-line="307" selection-start-column="18" selection-end-line="307" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -606,29 +607,32 @@
     <entry file="file://$PROJECT_DIR$/cg_final/textures/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/textures/gl_texture.py">
+    <entry file="file://$PROJECT_DIR$/cg_final/door/door.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-164">
-          <caret line="4" column="8" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="8" />
+        <state relative-caret-position="270">
+          <caret line="18" selection-start-line="18" selection-end-line="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/builder.py">
+    <entry file="file://$USER_HOME$/Downloads/PyOpenGL-accelerate-3.1.0/setup.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cg_final/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="246">
-          <caret line="305" column="8" selection-start-line="305" selection-start-column="8" selection-end-line="305" selection-end-column="8" />
+        <state relative-caret-position="165">
+          <caret line="11" column="11" lean-forward="true" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cg_final/support.py">
+    <entry file="file://$PROJECT_DIR$/cg_final/textures/gl_texture.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-69">
-          <caret line="52" column="33" lean-forward="true" selection-start-line="52" selection-start-column="33" selection-end-line="52" selection-end-column="33" />
+        <state relative-caret-position="286">
+          <caret line="36" column="35" lean-forward="true" selection-start-line="36" selection-start-column="35" selection-end-line="36" selection-end-column="35" />
           <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
