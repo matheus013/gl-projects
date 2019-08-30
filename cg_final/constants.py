@@ -42,9 +42,10 @@ class DataUtil(object):
     vertices = ()
     edges = ()
     surfaces = ()
+    textures_id = {}
     path_textures = {
-        "wall": "/Users/matheus/PycharmProjects/CG-Test/cg_final/textures/wall-0.png",
-        "ground0": "/Users/matheus/PycharmProjects/CG-Test/cg_final/textures/piso-1.png",
+        "wall": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/wall-0.png",
+        "ground0": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/piso-1.png",
 
     }
     colors = (

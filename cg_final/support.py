@@ -1,5 +1,4 @@
 from OpenGL.GL import *
-from OpenGL.raw.GLUT import glutSwapBuffers
 
 from cg_final.constants import DataUtil
 from cg_final.textures.gl_texture import FileTexture, RandomTexture
@@ -46,31 +45,7 @@ def make_surface(vertices, zero):
 def texture_init(type_texture):
     if type_texture is None:
         return False, None
-
-    fileName = DataUtil.path_textures[type_texture]
-    texture = FileTexture(fileName)
-    texture_id = glGenTextures(1)
-
-    if texture is None:
-        return False, texture_id
-
-    glBindTexture(GL_TEXTURE_2D, texture_id)
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-
-    glEnable(GL_TEXTURE_2D)
-
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
-
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, texture.width, texture.height, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, texture.raw_reference)
-
-    glBindTexture(GL_TEXTURE_2D, texture_id)
-
+    texture_id = DataUtil.textures_id[type_texture]
     return True, texture_id
 
 
@@ -78,9 +53,8 @@ def build(edges, points, surfaces, type_texture=None):
     ref_texture = ((0, 1), (0, 0), (1, 0), (1, 1))
     if DataUtil.face_view:
         glBegin(GL_QUADS)
-
         texture_ok, texture_id = texture_init(type_texture)
-
+        # print(texture_ok, texture_id)
         for surface in surfaces:
             x = 0
             for vertex in surface:
@@ -92,7 +66,7 @@ def build(edges, points, surfaces, type_texture=None):
                     glColor3fv(DataUtil.colors[x])
                 glVertex3fv(points[vertex])
         glEnd()
-        glutSwapBuffers()
+        # glutSwapBuffers()
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
@@ -113,3 +87,17 @@ def quad(origin, end, h):
         (end[0], end[1] + h, end[2]),
         end,
     )
+
+
+def gen_texture_id(obj_name):
+    filename = DataUtil.path_textures[obj_name]
+    f = FileTexture(filename)
+    texture_id = f.read_texture()
+    return texture_id
+
+
+def register_texture():
+    obj_names = ['wall', 'ground0']
+    for i in obj_names:
+        DataUtil.textures_id[i] = gen_texture_id(i)
+    print(DataUtil.textures_id)

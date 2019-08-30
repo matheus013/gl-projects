@@ -3,6 +3,7 @@ from OpenGL.raw.GLU import gluPerspective
 from pygame.locals import *
 
 from cg_final.builder import *
+from cg_final.support import register_texture
 
 ref_x = 1
 ref_y = 1
@@ -51,10 +52,10 @@ if __name__ == '__main__':
     pygame.init()
     display = (800, 600)
 
-    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL | GL_RGB)
     gluPerspective(30, (display[0] / display[1]), 0.1, 50.0)
     generate(ref_x, ref_y, ref_z)
-
+    register_texture()
     xa, ya, za = 0, 0, 0
 
     glOrtho(-5, 30, 10, -30, 15, 30)
