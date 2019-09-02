@@ -1,3 +1,5 @@
+from OpenGL.raw.GL.VERSION.GL_1_1 import GL_SMOOTH
+
 from cg_final.door.door import Door
 
 width = 25
@@ -37,15 +39,31 @@ door_conf = {
 
 }
 
+ref_light = {
+    'inc_factor': 0.01, 'inc_pl_y': 0, 'intensity': 0.3, 'model': GL_SMOOTH
+}
+
 
 class DataUtil(object):
     vertices = ()
     edges = ()
     surfaces = ()
     textures_id = {}
+    objects = []
     path_textures = {
-        "wall": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/wall-0.png",
-        "ground0": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/piso-1.png",
+        'wall': './textures/source/wall.jpg',
+        'chair': './textures/source/chair.jpg',
+        'chair_back': './textures/source/chair_back.png',
+        'chair_wood': './textures/source/wood_chair.jpg',
+        'ground0': './textures/source/piso1.jpg',
+        'ground1': './textures/source/piso2.jpg',
+        'ground2': './textures/source/piso-1.png',
+        'door': './textures/source/door.jpg',
+        'sub_ground': './textures/source/sub.jpg',
+        'top': './textures/source/telhado.jpg',
+        'table': './textures/source/table.jpg',
+        'top_table': './textures/source/top_table.jpg',
+        'gold': './textures/source/gold.jpeg',
 
     }
     colors = (
