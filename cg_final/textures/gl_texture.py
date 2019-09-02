@@ -35,14 +35,19 @@ class FileTexture(Texture):
 
         self.raw_reference = numpy.array(list(img.getdata()), numpy.uint8)
 
-    def read_texture(self):
+    def read_texture(self, repeat=True):
         texture_id = glGenTextures(1)
 
         glBindTexture(GL_TEXTURE_2D, texture_id)
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
 
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        if repeat:
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        else:
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
 
@@ -55,3 +60,5 @@ class FileTexture(Texture):
         glGenerateMipmap(GL_TEXTURE_2D)
 
         return texture_id
+
+

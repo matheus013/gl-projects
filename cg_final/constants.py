@@ -64,6 +64,14 @@ class DataUtil(object):
         'table': './textures/source/table.jpg',
         'top_table': './textures/source/top_table.jpg',
         'gold': './textures/source/gold.jpeg',
+        'window':'./textures/source/window.jpg',
+        'jesus': './textures/source/jesus-0.jpg',
+        'over-jesus': './textures/source/over-jesus-0.jpg',
+        'vitral1': './textures/source/vitral-0.jpg',
+        'vitral2': './textures/source/vitral-1.jpg',
+        'vitral3': './textures/source/vitral-2.jpg',
+        'pillar': './textures/source/pillar-altar.jpg',
+        'alt-main': './textures/source/altar-main.jpg',
 
     }
     colors = (

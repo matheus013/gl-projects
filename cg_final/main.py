@@ -37,7 +37,7 @@ def turn_on_light():
     ambient_light = [0.2, 0.2, 0.2, 1]
     diffused_light = [0.9, 0.9, 0.9, 1]
     specular_light = [1.0, 1.0, 1.0, 1]
-    position_light = [0.0, 600.0, 0.8, 1]
+    position_light = [0.0, 200.0, 0.8, 1]
 
     glShadeModel(ref_light['model'])
 
@@ -163,6 +163,7 @@ if __name__ == '__main__':
                     glTranslate(center_point[0], center_point[1], center_point[2])
                     glRotatef(-5, 1, 0, 0)
                     glTranslate(-center_point[0], -center_point[1], -center_point[2])
+
                 # rotate over Y
                 if event.key == pygame.K_a:
                     glTranslate(center_point[0], center_point[1], center_point[2])
@@ -171,6 +172,16 @@ if __name__ == '__main__':
                 if event.key == pygame.K_d:
                     glTranslate(center_point[0], center_point[1], center_point[2])
                     glRotatef(-5, 0, 1, 0)
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+
+                # rotate over Z
+                if event.key == pygame.K_q:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
+                    glRotatef(5, 0, 0, 1)
+                    glTranslate(-center_point[0], -center_point[1], -center_point[2])
+                if event.key == pygame.K_e:
+                    glTranslate(center_point[0], center_point[1], center_point[2])
+                    glRotatef(-5, 0, 0, 1)
                     glTranslate(-center_point[0], -center_point[1], -center_point[2])
 
                 if event.key == pygame.K_TAB:

@@ -123,6 +123,10 @@ def quad(origin, end, h):
 def gen_texture_id(obj_name):
     filename = DataUtil.path_textures[obj_name]
     f = FileTexture(filename)
+    no_repeat = ['jesus', 'window']
+    if obj_name in no_repeat:
+        texture_id = f.read_texture(repeat=False)
+        return texture_id
     texture_id = f.read_texture()
     return texture_id
 
