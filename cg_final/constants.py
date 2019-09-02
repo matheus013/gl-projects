@@ -15,7 +15,7 @@ door_height = [tower_height * 0.3, tower_height * 0.4, tower_height * 0.5]
 attachment_depth = depth * 0.15
 attachment_width = tower_width
 
-ground = True
+ground = False
 
 limit_door = (0.0, 90.0)
 
@@ -43,9 +43,11 @@ class DataUtil(object):
     edges = ()
     surfaces = ()
     textures_id = {}
+    objects = []
     path_textures = {
-        "wall": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/wall-0.png",
-        "ground0": "/home/matheus.inacio@laccan.net/PycharmProjects/gl-projects/cg_final/textures/source/piso-1.png",
+        "wall": "./textures/source/wall-0.png",
+        "ground0": "./textures/source/piso-1.png",
+        'door': "./textures/source/piso-1.png",
 
     }
     colors = (

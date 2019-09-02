@@ -26,8 +26,7 @@ class RandomTexture(Texture):
 
     def __init__(self, xSizeP, ySizeP):
         self.width, self.height = xSizeP, ySizeP
-        tmpList = [random.randint(0, 255) \
-                   for i in range(3 * self.width * self.height)]
+        tmpList = [random.randint(0, 255) for i in range(3 * self.width * self.height)]
         self.texture_array = array.array('B', tmpList)
         self.raw_reference = self.texture_array.tostring()
 

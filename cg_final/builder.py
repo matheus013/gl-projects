@@ -3,15 +3,27 @@ import math
 from OpenGL.GL import *
 
 from cg_final.constants import *
-from cg_final.support import valid_points, valid_edges, make_edges, make_surface, quad, mid, build
+from cg_final.support import valid_points, valid_edges, make_edges, make_surface, quad, mid, build, draw_object
 
 
-def config_door(base_left, base_right, ref, id):
-    door_conf[ref][id].base_left = base_left
-    door_conf[ref][id].base_right = base_right
+class DrawableObject:
+    def __init__(self, surfaces, vertices, edges, type_name):
+        self.type_name = type_name
+        self.edges = edges
+        self.surface = surfaces
+        self.vertices = vertices
+
+    def values(self):
+        return self.edges, self.vertices, self.surface
 
 
-def build_arc_wall(arc_center, top_origin, top_end, radius, x_or_z):
+def config_door(base_left, base_right, ref, index):
+    print('configure door: ', ref, index)
+    door_conf[ref][index].base_left = base_left
+    door_conf[ref][index].base_right = base_right
+
+
+def build_arc_wall(arc_center, top_origin, top_end, radius, x_or_z, parent=None):
     vertices = (
         top_origin,
         top_end
@@ -24,9 +36,20 @@ def build_arc_wall(arc_center, top_origin, top_end, radius, x_or_z):
         z = arc_center[2] if x_or_z else arc_center[2] + radius * math.cos(rad)
         vertices += ((x, y, z),)
 
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
-    DataUtil.surfaces += make_surface(vertices, len(DataUtil.vertices))
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
+
+    if parent is not None:
+        parent.vertices += vertices
+        parent.edges += no_tail_edges
+        parent.surfaces = no_tail_surfaces
+        return parent
+
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, '')
 
 
 def build_half_circle_xy(x_center, y_center, z_center, radius):
@@ -58,191 +81,228 @@ def build_pillar(x_center, y_center, z_center, h, d):
         (x_center - d / 2, y_center, z_center - d / 2),
 
     )
-    build_wall(vertices[0], vertices[1], h)
-    build_wall(vertices[1], vertices[2], h)
-    build_wall(vertices[2], vertices[3], h)
-    build_wall(vertices[0], vertices[3], h)
+    obj = build_wall(vertices[0], vertices[1], h)
+    obj = build_wall(vertices[1], vertices[2], h, parent=obj)
+    obj = build_wall(vertices[2], vertices[3], h, parent=obj)
+    obj = build_wall(vertices[0], vertices[3], h, parent=obj)
+    return obj
 
 
-def build_wall(origin, end, h, notify=False, texture=False):
+def build_wall(origin, end, h, notify=False, type_name="wall", parent=None):
     vertices = quad(origin, end, h)
     if notify:
         print('wall', vertices)
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
-    DataUtil.surfaces += make_surface(vertices, len(DataUtil.vertices))
+
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
 
     valid_points(DataUtil.vertices, 3, 'wall')
     valid_edges(DataUtil.edges, DataUtil.vertices, 'wall')
 
+    if parent is not None:
+        parent.vertices += vertices
+        parent.edges += no_tail_edges
+        parent.surfaces = no_tail_surfaces
+        return parent
 
-def build_plain(origin, end, d):
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, type_name)
+
+
+def build_plain(origin, end, d, parent=None):
     vertices = (
         origin,
         (origin[0], origin[1], origin[2] + d),
         (end[0], end[1], end[2] + d),
         end,
     )
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
 
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
-    DataUtil.surfaces += make_surface(vertices, len(DataUtil.vertices))
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
 
     valid_points(DataUtil.vertices, 3, 'plain')
     valid_edges(DataUtil.edges, DataUtil.vertices, 'plain')
 
+    if parent is not None:
+        parent.vertices += vertices
+        parent.edges += no_tail_edges
+        parent.surfaces = no_tail_surfaces
+        return parent
+
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, '')
+
 
 def build_front(x_origin, y_origin, z_origin):
-    build_wall((x_origin, y_origin, z_origin), (x_origin + (tower_width / 3), y_origin, z_origin),
-               height)
+    obj = build_wall((x_origin, y_origin, z_origin), (x_origin + (tower_width / 3), y_origin, z_origin),
+                     height)
     # door 1
-    build_wall((x_origin + tower_width / 3, y_origin + door_height[0], z_origin),
-               (x_origin + tower_width / 3 + door_width[0], y_origin + door_height[0], z_origin),
-               height - door_height[0])
+    obj = build_wall((x_origin + tower_width / 3, y_origin + door_height[0], z_origin),
+                     (x_origin + tower_width / 3 + door_width[0], y_origin + door_height[0], z_origin),
+                     height - door_height[0], parent=obj)
     config_door((x_origin + tower_width / 3, y_origin, z_origin),
                 (x_origin + tower_width / 3 + door_width[0], y_origin, z_origin), 'front', 0)
 
-    build_wall((x_origin + (tower_width / 3) + door_width[0], y_origin, z_origin),
-               (x_origin + 4 * (tower_width / 3), y_origin, z_origin), height)
+    obj = build_wall((x_origin + (tower_width / 3) + door_width[0], y_origin, z_origin),
+                     (x_origin + 4 * (tower_width / 3), y_origin, z_origin), height, parent=obj)
     # door 2
-    build_wall((x_origin + 4 * (tower_width / 3), y_origin + door_height[1], z_origin),
-               (x_origin + 4 * (tower_width / 3) + door_width[1], y_origin + door_height[1], z_origin),
-               height - door_height[1])
+    obj = build_wall((x_origin + 4 * (tower_width / 3), y_origin + door_height[1], z_origin),
+                     (x_origin + 4 * (tower_width / 3) + door_width[1], y_origin + door_height[1], z_origin),
+                     height - door_height[1], parent=obj)
     config_door((x_origin + 4 * (tower_width / 3), y_origin, z_origin),
                 (x_origin + 4 * (tower_width / 3) + door_width[1], y_origin, z_origin), 'front', 1)
 
-    build_wall((x_origin + 4 * (tower_width / 3) + door_width[1], y_origin, z_origin),
-               (x_origin + width / 2 - door_width[2] / 2, y_origin, z_origin),
-               height)
+    obj = build_wall((x_origin + 4 * (tower_width / 3) + door_width[1], y_origin, z_origin),
+                     (x_origin + width / 2 - door_width[2] / 2, y_origin, z_origin),
+                     height, parent=obj)
     # door 3
-    build_wall((x_origin + width / 2 + door_width[2] / 2, y_origin + door_height[2], z_origin),
-               (x_origin + width / 2 - door_width[2] / 2, y_origin + door_height[2], z_origin), height - door_height[2])
+    obj = build_wall((x_origin + width / 2 + door_width[2] / 2, y_origin + door_height[2], z_origin),
+                     (x_origin + width / 2 - door_width[2] / 2, y_origin + door_height[2], z_origin),
+                     height - door_height[2], parent=obj)
     config_door((x_origin + width / 2 - door_width[2] / 2, y_origin, z_origin),
                 (x_origin + width / 2 + door_width[2] / 2, y_origin, z_origin),
                 'front', 2)
 
-    build_wall((x_origin + width / 2 + door_width[2] / 2, y_origin, z_origin),
-               (x_origin + width - 4 * (tower_width / 3) - door_width[1], y_origin, z_origin), height)
+    obj = build_wall((x_origin + width / 2 + door_width[2] / 2, y_origin, z_origin),
+                     (x_origin + width - 4 * (tower_width / 3) - door_width[1], y_origin, z_origin), height, parent=obj)
     # door 2
-    build_wall((x_origin + width - 4 * (tower_width / 3) - door_width[1], y_origin + door_height[1], z_origin),
-               (x_origin + width - 4 * (tower_width / 3), y_origin + door_height[1], z_origin),
-               height - door_height[1])
+    obj = build_wall((x_origin + width - 4 * (tower_width / 3) - door_width[1], y_origin + door_height[1], z_origin),
+                     (x_origin + width - 4 * (tower_width / 3), y_origin + door_height[1], z_origin),
+                     height - door_height[1], parent=obj)
     config_door((x_origin + width - 4 * (tower_width / 3) - door_width[1], y_origin, z_origin),
                 (x_origin + width - 4 * (tower_width / 3), y_origin, z_origin), 'front', 3)
 
-    build_wall((x_origin + width - 4 * (tower_width / 3), y_origin, z_origin),
-               (x_origin + width - (tower_width / 3) - door_width[0], y_origin, z_origin),
-               height)
+    obj = build_wall((x_origin + width - 4 * (tower_width / 3), y_origin, z_origin),
+                     (x_origin + width - (tower_width / 3) - door_width[0], y_origin, z_origin),
+                     height, parent=obj)
     # door 1
-    build_wall((x_origin + width - (tower_width / 3), y_origin + door_height[0], z_origin),
-               (x_origin + width - (tower_width / 3) - door_width[0], y_origin + door_height[0], z_origin),
-               height - door_height[0])
+    obj = build_wall((x_origin + width - (tower_width / 3), y_origin + door_height[0], z_origin),
+                     (x_origin + width - (tower_width / 3) - door_width[0], y_origin + door_height[0], z_origin),
+                     height - door_height[0], parent=obj)
     config_door((x_origin + width - (tower_width / 3) - door_width[0], y_origin, z_origin),
                 (x_origin + width - (tower_width / 3), y_origin, z_origin),
                 'front', 4)
 
-    build_wall((x_origin + width - (tower_width / 3), y_origin, z_origin),
-               (x_origin + width, y_origin, z_origin),
-               height)
+    obj = build_wall((x_origin + width - (tower_width / 3), y_origin, z_origin),
+                     (x_origin + width, y_origin, z_origin),
+                     height, parent=obj)
+    obj.type_name = 'wall'
+    return obj
 
 
 def build_tower(x_origin, y_origin, z_origin):
     # left
-    build_wall((x_origin, y_origin + height, z_origin), (x_origin + tower_width, y_origin + height, z_origin),
-               tower_height)
+    left = build_wall((x_origin, y_origin + height, z_origin), (x_origin + tower_width, y_origin + height, z_origin),
+                      tower_height)
 
-    build_wall((x_origin, y_origin + height, z_origin), (x_origin, y_origin + height, z_origin + tower_width),
-               tower_height)
+    left = build_wall((x_origin, y_origin + height, z_origin), (x_origin, y_origin + height, z_origin + tower_width),
+                      tower_height, parent=left)
 
-    build_wall((x_origin + tower_width, y_origin + height, z_origin),
-               (x_origin + tower_width, y_origin + height, z_origin + tower_width),
-               tower_height)
+    left = build_wall((x_origin + tower_width, y_origin + height, z_origin),
+                      (x_origin + tower_width, y_origin + height, z_origin + tower_width),
+                      tower_height, parent=left)
 
-    build_wall((x_origin, y_origin + height, z_origin + tower_width),
-               (x_origin + tower_width, y_origin + height, z_origin + tower_width),
-               tower_height)
+    left = build_wall((x_origin, y_origin + height, z_origin + tower_width),
+                      (x_origin + tower_width, y_origin + height, z_origin + tower_width),
+                      tower_height, parent=left)
 
     # right
-    build_wall((x_origin + width, y_origin + height, z_origin),
-               (x_origin + width - tower_width, y_origin + height, z_origin),
-               tower_height)
+    right = build_wall((x_origin + width, y_origin + height, z_origin),
+                       (x_origin + width - tower_width, y_origin + height, z_origin),
+                       tower_height)
 
-    build_wall((x_origin + width, y_origin + height, z_origin),
-               (x_origin + width, y_origin + height, z_origin + tower_width),
-               tower_height)
+    right = build_wall((x_origin + width, y_origin + height, z_origin),
+                       (x_origin + width, y_origin + height, z_origin + tower_width),
+                       tower_height, parent=right)
 
-    build_wall((x_origin + width - tower_width, y_origin + height, z_origin),
-               (x_origin + width - tower_width, y_origin + height, z_origin + tower_width),
-               tower_height)
+    right = build_wall((x_origin + width - tower_width, y_origin + height, z_origin),
+                       (x_origin + width - tower_width, y_origin + height, z_origin + tower_width),
+                       tower_height, parent=right)
 
-    build_wall((x_origin + width, y_origin + height, z_origin + tower_width),
-               (x_origin + width - tower_width, y_origin + height, z_origin + tower_width),
-               tower_height)
+    right = build_wall((x_origin + width, y_origin + height, z_origin + tower_width),
+                       (x_origin + width - tower_width, y_origin + height, z_origin + tower_width),
+                       tower_height, parent=right)
+    return left, right
 
 
 def build_right(x_origin, y_origin, z_origin):
-    build_wall((x_origin + width, y_origin, z_origin),
-               (x_origin + width, y_origin, z_origin + depth / 3 - door_width[0]), height)
+    obj = build_wall((x_origin + width, y_origin, z_origin),
+                     (x_origin + width, y_origin, z_origin + depth / 3 - door_width[0]), height)
     # porta lateral frente
-    build_wall((x_origin + width, y_origin + door_height[0], z_origin + depth / 3),
-               (x_origin + width, y_origin + door_height[0], z_origin + depth / 3 - door_width[0]),
-               height - door_height[0])
+    obj = build_wall((x_origin + width, y_origin + door_height[0], z_origin + depth / 3),
+                     (x_origin + width, y_origin + door_height[0], z_origin + depth / 3 - door_width[0]),
+                     height - door_height[0], parent=obj)
     config_door((x_origin + width, y_origin, z_origin + depth / 3 - door_width[0]),
                 (x_origin + width, y_origin, z_origin + depth / 3), 'right', 0)
 
-    build_wall((x_origin + width, y_origin, z_origin + depth / 3),
-               (x_origin + width, y_origin, z_origin + 2 * depth / 3 - door_width[0]), height)
+    obj = build_wall((x_origin + width, y_origin, z_origin + depth / 3),
+                     (x_origin + width, y_origin, z_origin + 2 * depth / 3 - door_width[0]), height, parent=obj)
 
     # porta lateral meio
-    build_wall((x_origin + width, y_origin + door_height[0], z_origin + 2 * depth / 3 - door_width[0]),
-               (x_origin + width, y_origin + door_height[0], z_origin + 2 * depth / 3),
-               height - door_height[0])
+    obj = build_wall((x_origin + width, y_origin + door_height[0], z_origin + 2 * depth / 3 - door_width[0]),
+                     (x_origin + width, y_origin + door_height[0], z_origin + 2 * depth / 3),
+                     height - door_height[0], parent=obj)
     config_door((x_origin + width, y_origin, z_origin + 2 * depth / 3 - door_width[0]),
                 (x_origin + width, y_origin, z_origin + 2 * depth / 3), 'right', 1)
 
-    build_wall((x_origin + width, y_origin, z_origin + 2 * depth / 3),
-               (x_origin + width, y_origin, z_origin + depth - 3 * door_width[0]), height)
+    obj = build_wall((x_origin + width, y_origin, z_origin + 2 * depth / 3),
+                     (x_origin + width, y_origin, z_origin + depth - 3 * door_width[0]), height, parent=obj)
 
     # porta lateral mais fundo
-    build_wall((x_origin + width, y_origin + door_height[0], z_origin + depth - 3 * door_width[0]),
-               (x_origin + width, y_origin + door_height[0], z_origin + depth - 3 * door_width[0] + door_width[0]),
-               height - door_height[0])
+    obj = build_wall((x_origin + width, y_origin + door_height[0], z_origin + depth - 3 * door_width[0]),
+                     (
+                         x_origin + width, y_origin + door_height[0],
+                         z_origin + depth - 3 * door_width[0] + door_width[0]),
+                     height - door_height[0], parent=obj)
     config_door((x_origin + width, y_origin, z_origin + depth - 3 * door_width[0]),
                 (x_origin + width, y_origin, z_origin + depth - 3 * door_width[0] + door_width[0]),
                 'right', 2)
 
-    build_wall((x_origin + width, y_origin, z_origin + depth - 3 * door_width[0] + door_width[0]),
-               (x_origin + width, y_origin, z_origin + depth), height)
+    obj = build_wall((x_origin + width, y_origin, z_origin + depth - 3 * door_width[0] + door_width[0]),
+                     (x_origin + width, y_origin, z_origin + depth), height, parent=obj)
+    obj.type_name = 'wall'
+    return obj
 
 
 def build_back(x_origin, y_origin, z_origin):
-    build_wall((x_origin, y_origin, z_origin + depth), (x_origin + width, y_origin, z_origin + depth), height)
+    obj = build_wall((x_origin, y_origin, z_origin + depth), (x_origin + width, y_origin, z_origin + depth), height,
+                     type_name='wall')
 
 
 def build_left(x_origin, y_origin, z_origin):
-    build_wall((x_origin, y_origin, z_origin), (x_origin, y_origin, z_origin + depth * 0.4), height)
+    pre_attachment = build_wall((x_origin, y_origin, z_origin), (x_origin, y_origin, z_origin + depth * 0.4), height,
+                                type_name='wall')
 
     # attachment begin
-    build_wall((x_origin, y_origin, z_origin + depth * 0.4),
-               (x_origin - attachment_width, y_origin, z_origin + depth * 0.4), height)
+    front_attachment = build_wall((x_origin, y_origin, z_origin + depth * 0.4),
+                                  (x_origin - attachment_width, y_origin, z_origin + depth * 0.4), height,
+                                  type_name='wall')
 
-    build_wall((x_origin - attachment_width, y_origin, z_origin + depth * 0.4), (
-        x_origin - attachment_width, y_origin, z_origin + depth * 0.4 + attachment_depth), height)
+    side_attachment = build_wall((x_origin - attachment_width, y_origin, z_origin + depth * 0.4), (
+        x_origin - attachment_width, y_origin, z_origin + depth * 0.4 + attachment_depth), height,
+                                 type_name='wall')
 
-    build_wall((x_origin - attachment_width, y_origin, z_origin + depth * 0.4 + attachment_depth),
-               (x_origin, y_origin, z_origin + depth * 0.4 + attachment_depth), height)
+    back_attachment = build_wall((x_origin - attachment_width, y_origin, z_origin + depth * 0.4 + attachment_depth),
+                                 (x_origin, y_origin, z_origin + depth * 0.4 + attachment_depth), height,
+                                 type_name='wall')
     # attachment end
-    build_wall((x_origin, y_origin, z_origin + depth * 0.4 + attachment_depth),
-               (x_origin, y_origin, z_origin + depth * (2 / 3) - door_width[0]), height)
+    obj = build_wall((x_origin, y_origin, z_origin + depth * 0.4 + attachment_depth),
+                     (x_origin, y_origin, z_origin + depth * (2 / 3) - door_width[0]), height)
 
     # door
-    build_wall((x_origin, y_origin + door_height[0], z_origin + depth * (2 / 3)),
-               (x_origin, y_origin + door_height[0], z_origin + depth * (2 / 3) - door_width[0]),
-               height - door_height[0])
+    obj = build_wall((x_origin, y_origin + door_height[0], z_origin + depth * (2 / 3)),
+                     (x_origin, y_origin + door_height[0], z_origin + depth * (2 / 3) - door_width[0]),
+                     height - door_height[0], parent=obj)
     config_door((x_origin, y_origin, z_origin + depth * (2 / 3)),
                 (x_origin, y_origin, z_origin + depth * (2 / 3) - door_width[0]), 'left', 0)
 
-    build_wall((x_origin, y_origin, z_origin + depth * (2 / 3)), (x_origin, y_origin, z_origin + depth), height)
+    obj = build_wall((x_origin, y_origin, z_origin + depth * (2 / 3)), (x_origin, y_origin, z_origin + depth), height,
+                     parent=obj)
 
     attachment_origin = (x_origin - attachment_width, y_origin, z_origin + depth * 0.4)
     attachment_center = (math.fabs(attachment_width / 2), math.fabs(y_origin), math.fabs(attachment_depth / 2))
@@ -257,7 +317,11 @@ def build_top(x_origin, y_origin, z_origin):
         (x_origin + width, y_origin + height, z_origin + depth),
         (x_origin + width, y_origin + height, z_origin),
     )
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
 
     vertices = (
@@ -266,7 +330,11 @@ def build_top(x_origin, y_origin, z_origin):
         (x_origin, y_origin + height, z_origin + depth),
         (x_origin, y_origin + height, z_origin),
     )
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
 
     valid_points(DataUtil.vertices, 3, 'top')
@@ -280,13 +348,16 @@ def build_ground(center, origin, delta):
         (origin[0] + delta + 2 * center[0], origin[1], origin[2] + delta + 2 * center[2]),
         (origin[0] + 2 * center[0] + delta, origin[1], origin[2] - delta),
     )
-    build_wall(base[0], base[1], delta)
-    build_wall(base[1], base[2], delta)
-    build_wall(base[2], base[3], delta)
-    build_wall(base[0], base[3], delta)
+    obj = build_wall(base[0], base[1], delta)
+    obj = build_wall(base[1], base[2], delta, parent=obj)
+    obj = build_wall(base[2], base[3], delta, parent=obj)
+    obj = build_wall(base[0], base[3], delta, parent=obj, type_name='sub_ground')
 
-    build_plain(base[0], base[3], 2 * (center[2] + delta))
-    pass
+    plain_ground = build_plain(base[0], base[3], 2 * (center[2] + delta))
+    plain_ground.type_name = 'ground0'
+
+    DataUtil.objects.append(obj)
+    DataUtil.objects.append(plain_ground)
 
 
 def build_door(config, key):
@@ -296,14 +367,20 @@ def build_door(config, key):
     glPushMatrix()
 
     left_vertices = quad(config.base_left, center, config.height)
-    left_edges = make_edges(left_vertices, 0)
-    left_surfaces = make_surface(left_vertices, 0)
+
+    with_tail_edges, no_tail_edges = make_edges(left_vertices, 0)
+    with_tail_surfaces, no_tail_surfaces = make_surface(left_vertices, 0)
+
+    left_edges = with_tail_edges
+    left_surfaces = with_tail_surfaces
 
     glTranslate(config.base_left[0], config.base_left[1], config.base_left[2])
     glRotatef(config.alpha, 0, 1, 0)
     glTranslate(-config.base_left[0], -config.base_left[1], -config.base_left[2])
 
-    build(left_edges, left_vertices, left_surfaces)
+    draw_object(DrawableObject(left_surfaces, left_vertices, left_edges, 'door'), DataUtil.textures_id['door'])
+
+    # build(left_edges, left_vertices, left_surfaces)
 
     if config.run:
         if config.state:
@@ -322,14 +399,19 @@ def build_door(config, key):
     # right
     glPushMatrix()
     right_vertices = quad(config.base_right, center, config.height)
-    right_edges = make_edges(right_vertices, 0)
-    right_surfaces = make_surface(right_vertices, 0)
+
+    with_tail_edges, no_tail_edges = make_edges(right_vertices, 0)
+    with_tail_surfaces, no_tail_surfaces = make_surface(right_vertices, 0)
+
+    right_edges = with_tail_edges
+    right_surfaces = with_tail_surfaces
 
     glTranslate(config.base_right[0], config.base_right[1], config.base_right[2])
     glRotatef(-config.alpha, 0, 1, 0)
     glTranslate(-config.base_right[0], -config.base_right[1], -config.base_right[2])
 
-    build(right_edges, right_vertices, right_surfaces)
+    draw_object(DrawableObject(right_surfaces, right_vertices, right_edges, 'door'), DataUtil.textures_id['door'])
+    # build(right_edges, right_vertices, right_surfaces)
     glPopMatrix()
 
 
@@ -337,21 +419,21 @@ def build_block(center, l, h, d, notify=False):
     # base plain
     c = list(center)
     c[1] = c[1] - h / 2
-    base = build_block_plain(c, l, d, notify)
+    obj = build_block_plain(c, l, d, notify)
+    base = obj.vertices
     # top plain
     c = list(center)
     c[1] = c[1] + h / 2
     build_block_plain(c, l, d, notify)
 
-    build_wall(base[0], base[1], h, notify)
-    build_wall(base[1], base[2], h, notify)
-    build_wall(base[2], base[3], h, notify)
-    build_wall(base[0], base[3], h, notify)
+    obj = build_wall(base[0], base[1], h, notify, parent=obj)
+    obj = build_wall(base[1], base[2], h, notify, parent=obj)
+    obj = build_wall(base[2], base[3], h, notify, parent=obj)
+    obj = build_wall(base[0], base[3], h, notify, parent=obj)
+    return obj
 
-    pass
 
-
-def build_block_plain(center, l, d, notify=False):
+def build_block_plain(center, l, d, notify=False, parent=None):
     vertices = (
         (center[0] - l / 2, center[1], center[2] - d / 2),
         (center[0] - l / 2, center[1], center[2] + d / 2),
@@ -361,25 +443,44 @@ def build_block_plain(center, l, d, notify=False):
 
     if notify:
         print('plain', vertices)
-    DataUtil.edges += make_edges(vertices, len(DataUtil.vertices))
-    DataUtil.surfaces += make_surface(vertices, len(DataUtil.vertices))
+
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
     DataUtil.vertices += vertices
 
     valid_points(DataUtil.vertices, 3, 'plain')
     valid_edges(DataUtil.edges, DataUtil.vertices, 'plain')
-    return vertices
+    if parent is not None:
+        parent.vertices += vertices
+        parent.edges += no_tail_edges
+        parent.surfaces = no_tail_surfaces
+        return parent
+
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, '')
 
 
-def build_any_plain(base, notify=False):
+def build_any_plain(vertices, notify=False, parent=None):
     if notify:
-        print('plain', base)
-    DataUtil.edges += make_edges(base, len(DataUtil.vertices))
-    DataUtil.surfaces += make_surface(base, len(DataUtil.vertices))
-    DataUtil.vertices += base
+        print('plain', vertices)
+
+    with_tail_edges, no_tail_edges = make_edges(vertices, len(DataUtil.vertices))
+    with_tail_surfaces, no_tail_surfaces = make_surface(vertices, len(DataUtil.vertices))
+
+    DataUtil.edges += with_tail_edges
+    DataUtil.surfaces += with_tail_surfaces
+    DataUtil.vertices += vertices
 
     valid_points(DataUtil.vertices, 3, 'plain')
     valid_edges(DataUtil.edges, DataUtil.vertices, 'plain')
-    return base
+    if parent is not None:
+        parent.vertices += vertices
+        parent.edges += no_tail_edges
+        parent.surfaces = no_tail_surfaces
+        return parent
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, '')
 
 
 def build_bench(center, l, h, d):
@@ -443,9 +544,13 @@ def build_arcs(ref_x, ref_y, ref_z):
 
 
 def build_main_table(center, l, d, h):
-    base = build_block_plain(center, l * 0.8, d * 0.8)
+    obj = build_block_plain(center, l * 0.8, d * 0.8)
+    base = obj.vertices
     new_center = (center[0], center[1] + h, center[2])
-    top = build_block_plain(new_center, l, d)
+    obj = build_block_plain(new_center, l, d)
+
+    top = obj.vertices
+
     sides = []
     for i in range(len(base) - 1):
         sides.append((

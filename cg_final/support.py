@@ -27,19 +27,24 @@ def valid_edges(edges, points, object_name):
 
 def make_edges(vertices, zero):
     edges = ()
+    no_tail = ()
     for i in range(zero, zero + len(vertices)):
         if i < zero + len(vertices) - 1:
             edges += ((i, i + 1),)
+            edges += ((i - zero, i + 1 - zero),)
         else:
             edges += ((zero, i),)
-    return edges
+            edges += ((0, i - zero),)
+    return edges, no_tail
 
 
 def make_surface(vertices, zero):
     surface = ()
+    no_tail = ()
     for i in range(zero, zero + len(vertices)):
         surface += (i,)
-    return (surface,)
+        no_tail += (i - zero,)
+    return (surface,), (no_tail,)
 
 
 def texture_init(type_texture):
@@ -49,31 +54,25 @@ def texture_init(type_texture):
     return True, texture_id
 
 
+def draw_object(obj, texture, wire_frame=False):
+    # print(obj)
+    edges, points, surfaces = obj.values()
+    if texture is not None and not wire_frame:
+        glEnable(GL_TEXTURE_2D)
+        glBindTexture(GL_TEXTURE_2D, texture)  # target, texture
+        build(edges, points, surfaces)
+        glDisable(GL_TEXTURE_2D)
+    else:
+        build(edges, points, surfaces)
+
+
 def build(edges, points, surfaces, type_texture=None):
-    ref_texture = ((0, 1), (0, 0), (1, 0), (1, 1))
-    if DataUtil.face_view:
-        glBegin(GL_QUADS)
-        texture_ok, texture_id = texture_init(type_texture)
-        # print(texture_ok, texture_id)
-        for surface in surfaces:
-            x = 0
-            for vertex in surface:
-                x += 1
-                index_texture = x - 1
-                if texture_ok:
-                    glTexCoord2f(ref_texture[index_texture][0], ref_texture[index_texture][1])
-                else:
-                    glColor3fv(DataUtil.colors[x])
-                glVertex3fv(points[vertex])
-        glEnd()
-        # glutSwapBuffers()
     glBegin(GL_LINES)
     for edge in edges:
         for vertex in edge:
             glVertex3fv(points[vertex])
 
     glEnd()
-    glLineWidth(1)
 
 
 def mid(a, b):
@@ -97,7 +96,6 @@ def gen_texture_id(obj_name):
 
 
 def register_texture():
-    obj_names = ['wall', 'ground0']
-    for i in obj_names:
-        DataUtil.textures_id[i] = gen_texture_id(i)
-    print(DataUtil.textures_id)
+    for i in DataUtil.path_textures:
+        if DataUtil.path_textures[i] is not None:
+            DataUtil.textures_id[i] = gen_texture_id(i)

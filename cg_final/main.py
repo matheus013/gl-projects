@@ -3,7 +3,7 @@ from OpenGL.raw.GLU import gluPerspective
 from pygame.locals import *
 
 from cg_final.builder import *
-from cg_final.support import register_texture
+from cg_final.support import register_texture, draw_object
 
 ref_x = 1
 ref_y = 1
@@ -14,7 +14,7 @@ def draw_game():
     glMatrixMode(GL_MODELVIEW)
 
     glPushMatrix()
-    build(DataUtil.edges, DataUtil.vertices, DataUtil.surfaces)
+    draw_object(DrawableObject(DataUtil.edges, DataUtil.vertices, DataUtil.surfaces, ''), DataUtil.textures_id['wall'])
     glPopMatrix()
 
     build_arcs(ref_x, ref_y, ref_z)
@@ -36,15 +36,29 @@ def draw_game():
 def generate(x, y, z):
     center_ground = (center_point[0], center_point[1], center_point[2])
     origin_ground = (x, y, z)
+
     if ground:
         build_ground(center_ground, origin_ground, 3)  # OK surface
 
-    build_front(x, y, z)  # OK surface
-    build_right(x, y, z)  # OK surface
-    build_left(x, y, z)  # OK surface
-    build_back(x, y, z)  # OK surface
-    build_top(x, y, z)
-    build_tower(x, y, z)  # OK surface
+    front = build_front(x, y, z)  # OK surface
+    DataUtil.objects.append(front)
+
+    right = build_right(x, y, z)  # OK surface
+    DataUtil.objects.append(right)
+
+    left = build_left(x, y, z)  # OK surface
+    DataUtil.objects.append(left)
+
+    back = build_back(x, y, z)  # OK surface
+    DataUtil.objects.append(back)
+
+    top = build_top(x, y, z)
+    DataUtil.objects.append(top)
+
+    tower_left, tower_right = build_tower(x, y, z)  # OK surface
+    DataUtil.objects.append(tower_left)
+    DataUtil.objects.append(tower_right)
+
     build_internal(x, y, z)  # OK surface
 
 
