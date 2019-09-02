@@ -1,7 +1,8 @@
+import numpy as np
 from OpenGL.GL import *
 
 from cg_final.constants import DataUtil
-from cg_final.textures.gl_texture import FileTexture, RandomTexture
+from cg_final.textures.gl_texture import FileTexture
 
 
 def valid_points(points, r, object_name):
@@ -63,19 +64,47 @@ def draw_object(obj, texture, wire_frame=False):
     if texture is not None and not wire_frame:
         glEnable(GL_TEXTURE_2D)
         glBindTexture(GL_TEXTURE_2D, texture)  # target, texture
-        build(edges, points, surfaces)
+        build(edges, points, surfaces, texture)
         glDisable(GL_TEXTURE_2D)
     else:
         build(edges, points, surfaces)
 
 
-def build(edges, points, surfaces, type_texture=None):
-    glBegin(GL_LINES)
-    for edge in edges:
-        for vertex in edge:
+def build(edges, points, surfaces, type_texture=None, c=None):
+    # ref_texture = ((0, 1), (0, 0), (1, 0), (1, 1))
+    # glBegin(GL_LINES)
+    for face in surfaces:
+        ref_texture = get_tex(face)
+        glBegin(GL_QUADS)
+        for t, vertex in enumerate(face):
+            if type_texture is not None:
+                # print(type_texture)
+                if c is not None:
+                    glColor3fv(c)
+                glTexCoord2fv(ref_texture[t])
             glVertex3fv(points[vertex])
+        glEnd()
+    # glEnd()
 
-    glEnd()
+
+def get_tex(face, from_obj=None):
+    def dist(u, v):
+        diff = np.asarray(u) - np.asarray(v)
+        return np.linalg.norm(diff)
+
+    if from_obj == 'door':
+        f = list(face[1:])
+        f.append(face[0])
+        face = tuple(f)
+
+    v1, v2, v3, v4 = face
+    s1 = 0
+    s2 = dist(v1, v2)
+    t1 = 0
+    t2 = dist(v2, v3)
+    tc = [(s1, t1), (s2, t1), (s2, t2), (s1, t2)]
+
+    return tc
 
 
 def mid(a, b):
@@ -101,4 +130,5 @@ def gen_texture_id(obj_name):
 def register_texture():
     for i in DataUtil.path_textures:
         if DataUtil.path_textures[i] is not None:
+            print('loading texture', i, DataUtil.path_textures[i])
             DataUtil.textures_id[i] = gen_texture_id(i)

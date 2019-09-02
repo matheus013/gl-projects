@@ -472,30 +472,34 @@ def build_door(config, key):
     glPopMatrix()
 
 
-def build_block(center, l, h, d, notify=False):
+def build_block(center, l, h, d, notify=False, type_name='ground1', sides='wall'):
     # base plain
     c = list(center)
+
     c[1] = c[1] - h / 2
-    obj = build_block_plain(c, l, d, notify, t='ground2')
+    # print(c)
+    obj = build_block_plain(c, l, d, notify, t=type_name)
     DataUtil.objects.append(obj)
     base = obj.vertices
     # top plain
     c = list(center)
     c[1] = c[1] + h / 2
-    build_block_plain(c, l, d, notify)
+    # print(c)
+    obj = build_block_plain(c, l, d, notify, t=type_name)
+    DataUtil.objects.append(obj)
 
-    obj = build_wall(base[0], base[1], h, notify)
+    obj = build_wall(base[0], base[1], h, notify, type_name=sides)
     DataUtil.objects.append(obj)
-    obj = build_wall(base[1], base[2], h, notify)
+    obj = build_wall(base[1], base[2], h, notify, type_name=sides)
     DataUtil.objects.append(obj)
-    obj = build_wall(base[2], base[3], h, notify)
+    obj = build_wall(base[2], base[3], h, notify, type_name=sides)
     DataUtil.objects.append(obj)
-    obj = build_wall(base[0], base[3], h, notify)
+    obj = build_wall(base[0], base[3], h, notify, type_name=sides)
     DataUtil.objects.append(obj)
     return obj
 
 
-def build_block_plain(center, l, d, notify=False, parent=None, t=''):
+def build_block_plain(center, l, d, notify=False, parent=None, t='ground1'):
     vertices = (
         (center[0] - l / 2, center[1], center[2] - d / 2),
         (center[0] - l / 2, center[1], center[2] + d / 2),
@@ -524,7 +528,7 @@ def build_block_plain(center, l, d, notify=False, parent=None, t=''):
     return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, t)
 
 
-def build_any_plain(vertices, notify=False, parent=None):
+def build_any_plain(vertices, notify=False, parent=None, t='table'):
     if notify:
         print('plain', vertices)
 
@@ -542,7 +546,7 @@ def build_any_plain(vertices, notify=False, parent=None):
         parent.edges += no_tail_edges
         parent.surfaces = no_tail_surfaces
         return parent
-    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, '')
+    return DrawableObject(no_tail_surfaces, vertices, no_tail_edges, t)
 
 
 def build_bench(center, l, h, d):
@@ -566,11 +570,11 @@ def build_chair(left, right, h):
     c = mid(bases[0], bases[2])
 
     for i in bases:
-        build_pillar(i[0], i[1] - foot_height, i[2], foot_height, foot_width)
+        build_pillar(i[0], i[1] - foot_height, i[2], foot_height, foot_width, t='chair_wood')
 
-    build_block(c, l * 1.2, accent_height, l * 1.2)
+    build_block(c, l * 1.2, accent_height, l * 1.2, type_name='chair', sides='chair_wood')
 
-    obj = build_wall(left, right, backrest)
+    obj = build_wall(left, right, backrest, type_name='chair')
     DataUtil.objects.append(obj)
 
 
@@ -608,9 +612,11 @@ def build_arcs(ref_x, ref_y, ref_z):
 
 def build_main_table(center, l, d, h):
     obj = build_block_plain(center, l * 0.8, d * 0.8)
+    DataUtil.objects.append(obj)
     base = obj.vertices
     new_center = (center[0], center[1] + h, center[2])
-    obj = build_block_plain(new_center, l, d)
+    obj = build_block_plain(new_center, l, d, t='top_table')
+    DataUtil.objects.append(obj)
 
     top = obj.vertices
 
@@ -622,8 +628,15 @@ def build_main_table(center, l, d, h):
              top[i + 1],
              top[i])
         ))
+    sides.append(
+        (base[3],
+         base[0],
+         top[0],
+         top[3])
+    )
     for i in sides:
-        build_any_plain(i)
+        obj = build_any_plain(i)
+        DataUtil.objects.append(obj)
 
 
 def draw_cylinder(c, r, h):
@@ -646,7 +659,7 @@ def draw_cylinder(c, r, h):
 
     glBegin(GL_POLYGON)
     angle = 0.0
-    while (angle < 2 * math.pi):
+    while angle < 2 * math.pi:
         x = r * math.cos(angle)
         y = r * math.sin(angle)
         glVertex3f(c[1] + x, c[1] + h, c[1] + y)
@@ -676,7 +689,6 @@ def build_candle(center, r, h):
         p = list(c[i])
         p[1] += current_h
         current_h += dh[i]
-        print(p, current_radius, dh[i])
         draw_cylinder(p, current_radius, dh[i])
 
     pass
@@ -699,8 +711,11 @@ def build_bible_support(center, l, d, h):
     left = (base[0], base[1], top[1], top[0])
     right = (base[2], base[3], top[3], top[2])
 
-    build_any_plain(left)
-    build_any_plain(right)
+    obj = build_any_plain(left, t='gold')
+    DataUtil.objects.append(obj)
+
+    obj = build_any_plain(right, t='gold')
+    DataUtil.objects.append(obj)
 
     front = (
         (center[0] - l / 2, center[1], center[2] + d / 2),
@@ -709,7 +724,8 @@ def build_bible_support(center, l, d, h):
         (center[0] - l / 2, center[1] + h * 0.5, center[2] + d / 2),
     )
 
-    build_any_plain(front)
+    obj = build_any_plain(front, t='gold')
+    DataUtil.objects.append(obj)
 
     upper = (
         (center[0] - (l / 2) * 1.2, center[1] + h, center[2] - d / 2),
@@ -718,7 +734,8 @@ def build_bible_support(center, l, d, h):
         (center[0] + (l / 2) * 1.2, center[1] + h, center[2] - d / 2),
     )
 
-    build_any_plain(upper)
+    obj = build_any_plain(upper, t='gold')
+    DataUtil.objects.append(obj)
     return top
 
 

@@ -33,6 +33,27 @@ def draw_game():
     # build_candle((0,0,0), 0.2, 5)
 
 
+def turn_on_light():
+    ambient_light = [0.2, 0.2, 0.2, 1]
+    diffused_light = [0.9, 0.9, 0.9, 1]
+    specular_light = [1.0, 1.0, 1.0, 1]
+    position_light = [0.0, 600.0, 0.8, 1]
+
+    glShadeModel(ref_light['model'])
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient_light)
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_light)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffused_light)
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specular_light)
+    glLightfv(GL_LIGHT0, GL_POSITION, position_light)
+
+    glEnable(GL_COLOR_MATERIAL)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_DEPTH_TEST)
+
+
 def generate(x, y, z):
     center_ground = (center_point[0], center_point[1], center_point[2])
     origin_ground = (x, y, z)
@@ -73,6 +94,7 @@ if __name__ == '__main__':
     pygame.display.set_mode(display, DOUBLEBUF | OPENGL | GL_RGB)
     gluPerspective(30, (display[0] / display[1]), 0.1, 50.0)
     generate(ref_x, ref_y, ref_z)
+    turn_on_light()
     register_texture()
     xa, ya, za = 0, 0, 0
 
