@@ -31,10 +31,10 @@ def make_edges(vertices, zero):
     for i in range(zero, zero + len(vertices)):
         if i < zero + len(vertices) - 1:
             edges += ((i, i + 1),)
-            edges += ((i - zero, i + 1 - zero),)
+            no_tail += ((i - zero, i + 1 - zero),)
         else:
             edges += ((zero, i),)
-            edges += ((0, i - zero),)
+            no_tail += ((0, i - zero),)
     return edges, no_tail
 
 
@@ -54,8 +54,11 @@ def texture_init(type_texture):
     return True, texture_id
 
 
+def draw(obj):
+    draw_object(obj, DataUtil.textures_id[obj.type_name], DataUtil.face_view)
+
+
 def draw_object(obj, texture, wire_frame=False):
-    # print(obj)
     edges, points, surfaces = obj.values()
     if texture is not None and not wire_frame:
         glEnable(GL_TEXTURE_2D)

@@ -15,7 +15,7 @@ door_height = [tower_height * 0.3, tower_height * 0.4, tower_height * 0.5]
 attachment_depth = depth * 0.15
 attachment_width = tower_width
 
-ground = False
+ground = True
 
 limit_door = (0.0, 90.0)
 
@@ -45,9 +45,13 @@ class DataUtil(object):
     textures_id = {}
     objects = []
     path_textures = {
-        "wall": "./textures/source/wall-0.png",
-        "ground0": "./textures/source/piso-1.png",
-        'door': "./textures/source/piso-1.png",
+        'wall': './textures/source/wall-0.png',
+        'ground0': './textures/source/piso-1.png',
+        'ground1': './textures/source/piso-1.png',
+        'ground2': './textures/source/piso-1.png',
+        'door': './textures/source/piso-1.png',
+        'sub_ground': './textures/source/sub.jpg',
+        'top': './textures/source/telhado.jpg'
 
     }
     colors = (
